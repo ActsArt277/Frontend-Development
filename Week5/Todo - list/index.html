@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A simple to-do list for keeping track of what needs to get done."
+    />
+    <title>To-do List</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        color: #202a35;
+        background: #f3f6f5;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        display: grid;
+        min-height: 100vh;
+        margin: 0;
+        padding: 32px 16px;
+        place-items: center;
+        background:
+          radial-gradient(ellipse at 12% 15%, #dcece4 0, transparent 34%),
+          radial-gradient(ellipse at 88% 85%, #e4e8f4 0, transparent 36%), #f3f6f5;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      .todo-card {
+        width: min(100%, 520px);
+        padding: 42px;
+        border: 1px solid #e7ece9;
+        border-radius: 24px;
+        background: #fff;
+        box-shadow: 0 24px 70px rgb(31 48 40 / 10%);
+      }
+
+      .eyebrow {
+        margin: 0 0 10px;
+        color: #32805a;
+        font-size: 0.75rem;
+        font-weight: 750;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 7vw, 2.6rem);
+        letter-spacing: -0.055em;
+      }
+
+      .intro {
+        margin: 10px 0 28px;
+        color: #718078;
+      }
+
+      .add-form {
+        display: flex;
+        gap: 10px;
+      }
+
+      .add-form input {
+        min-width: 0;
+        flex: 1;
+        padding: 14px 16px;
+        border: 1px solid #dce5df;
+        border-radius: 12px;
+        outline: none;
+        background: #fbfcfb;
+        transition: border-color 150ms ease, box-shadow 150ms ease;
+      }
+
+      .add-form input:focus {
+        border-color: #32805a;
+        box-shadow: 0 0 0 3px rgb(50 128 90 / 13%);
+      }
+
+      .add-button,
+      .clear-button {
+        padding: 0 22px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .add-button {
+        border: 0;
+        background: #286b49;
+        color: #fff;
+        transition: background 150ms ease, transform 150ms ease;
+      }
+
+      .clear-button {
+        display: block;
+        width: 100%;
+        margin-top: 20px;
+        padding: 12px 22px;
+        border: 1px solid #dce5df;
+        background: #fff;
+        color: #526158;
+        transition: background 150ms ease, border-color 150ms ease;
+      }
+
+      .clear-button:hover {
+        border-color: #cbdcd1;
+        background: #f7faf8;
+      }
+
+      .add-button:hover {
+        transform: translateY(-1px);
+        background: #20583c;
+      }
+
+      .task-list {
+        display: grid;
+        gap: 10px;
+        margin: 26px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .task-item {
+        display: flex;
+        min-height: 54px;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 10px 8px 16px;
+        border: 1px solid #edf0ee;
+        border-radius: 12px;
+        background: #fff;
+        cursor: pointer;
+        transition: border-color 150ms ease, background 150ms ease;
+      }
+
+      .task-item:hover {
+        border-color: #cbdcd1;
+        background: #fbfdfb;
+      }
+
+      .task-text {
+        min-width: 0;
+        flex: 1;
+        overflow-wrap: anywhere;
+      }
+
+      .task-item.done .task-text {
+        color: #98a39d;
+        text-decoration: line-through;
+      }
+
+      .delete-button {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        flex: 0 0 auto;
+        place-items: center;
+        border: 0;
+        border-radius: 9px;
+        background: transparent;
+        color: #829087;
+        cursor: pointer;
+        font-size: 1.4rem;
+        line-height: 1;
+      }
+
+      .delete-button:hover {
+        background: #fff0ee;
+        color: #bb4b42;
+      }
+
+      .list-hint {
+        margin: 25px 0 0;
+        color: #89958e;
+        font-size: 0.9rem;
+        text-align: center;
+      }
+
+      .list-hint:empty {
+        display: none;
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        clip-path: inset(50%);
+      }
+
+      @media (max-width: 480px) {
+        .todo-card {
+          padding: 30px 22px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="todo-card">
+      <p class="eyebrow">A little progress, every day</p>
+      <h1>My to-do list</h1>
+      <p class="intro">Write it down. Check it off. Keep moving.</p>
+
+      <form class="add-form" id="add-form">
+        <label class="visually-hidden" for="task-input">New task</label>
+        <input
+          id="task-input"
+          name="task"
+          type="text"
+          placeholder="What needs to get done?"
+          autocomplete="off"
+          required
+        />
+        <button class="add-button" type="submit">Add</button>
+      </form>
+
+      <ul class="task-list" id="task-list" aria-label="To-do tasks"></ul>
+      <p class="list-hint" id="list-hint">Your list is clear. Add a task to get started.</p>
+      <button class="clear-button" id="clear-button" type="button">Clear</button>
+    </main>
+    <script>
+      const form = document.querySelector("#add-form");
+      const input = document.querySelector("#task-input");
+      const clearButton = document.querySelector("#clear-button");
+      const list = document.querySelector("#task-list");
+      const hint = document.querySelector("#list-hint");
+
+      clearButton.addEventListener("click", () => {
+        list.replaceChildren();
+        input.value = "";
+        updateEmptyHint();
+        input.focus();
+      });
+
+      function updateEmptyHint() {
+        hint.hidden = list.childElementCount > 0;
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const taskText = input.value.trim();
+        if (!taskText) {
+          input.focus();
+          return;
+        }
+
+        const task = document.createElement("li");
+        task.className = "task-item";
+
+        const text = document.createElement("span");
+        text.className = "task-text";
+        text.textContent = taskText;
+        task.append(text);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "delete-button";
+        deleteButton.type = "button";
+        deleteButton.textContent = "×";
+        deleteButton.setAttribute("aria-label", `Delete ${taskText}`);
+        task.append(deleteButton);
+
+        task.addEventListener("click", (clickEvent) => {
+          if (clickEvent.target !== deleteButton) {
+            task.classList.toggle("done");
+          }
+        });
+
+        deleteButton.addEventListener("click", () => {
+          task.remove();
+          updateEmptyHint();
+        });
+
+        list.append(task);
+        input.value = "";
+        input.focus();
+        updateEmptyHint();
+      });
+    </script>
+  </body>
+</html>
